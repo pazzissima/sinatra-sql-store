@@ -29,6 +29,18 @@ get '/products' do
   erb :products
 end
 
+#NEW!!!!!!
+get '/categories' do
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+
+  # Get all rows from the products table.
+  @categories = c.exec_params("SELECT * FROM categories;")
+  c.close
+  erb :categories
+end
+#END NEW!!!!!
+
+
 # Get the form for creating a new product
 get '/products/new' do
   erb :new_product
@@ -48,6 +60,23 @@ post '/products' do
   c.close
   redirect "/products/#{new_product_id}"
 end
+
+#NEW!!!!
+get '/categories/new' do
+  erb :new_category
+end
+
+post '/categories' do
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+
+  c.exec_params("INSERT INTO categories (name) VALUES ($1)",
+                  [params["name"]])
+
+  new_category_id = c.exec_params("SELECT currval('categories_id_seq');").first["currval"]
+  c.close
+  redirect "/categories/#{new_category_id}"
+end
+#NEW!!!!
 
 # Update a product
 post '/products/:id' do
@@ -117,6 +146,47 @@ def seed_products_table
   c = PGconn.new(:host => "localhost", :dbname => dbname)
   products.each do |p|
     c.exec_params("INSERT INTO products (name, price, description) VALUES ($1, $2, $3);", p)
+  end
+  c.close
+end
+
+
+
+
+
+def create_categories_table
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+  c.exec %q{
+  CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name varchar(20)
+
+  );
+  }
+  c.close
+end
+
+def drop_categories_table
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+  c.exec "DROP TABLE categories;"
+  c.close
+end
+
+def seed_categories_table
+  categories = [["Apparel"],
+              ["Shoes"],
+              ["Electronics"],
+              ["Hardware"],
+              ["Grocery"],
+              ["Baby"],
+              ["Pets"],
+              ["Toys"],
+              ["Other"],
+             ]
+
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+  categories.each do |cat|
+    c.exec_params("INSERT INTO categories (name) VALUES ($1);", cat)
   end
   c.close
 end
