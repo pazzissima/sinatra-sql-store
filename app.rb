@@ -95,6 +95,30 @@ get '/products/:id/edit' do
   c.close
   erb :edit_product
 end
+
+
+#NEW!!! Update the category
+post '/categories/:id' do
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+
+  # Update the product.
+  c.exec_params("UPDATE categories SET (name) = ($2) WHERE categories.id = $1 ",
+                [params["id"], params["name"]])
+  c.close
+  redirect "/categories/#{params["id"]}"
+end
+
+get '/categories/:id/edit' do
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+  @category = c.exec_params("SELECT * FROM categories WHERE categories.id = $1", [params["id"]]).first
+  c.close
+  erb :edit_category
+end
+#END NEW!!!!
+
+
+
+
 # DELETE to delete a product
 post '/products/:id/destroy' do
 
@@ -111,6 +135,15 @@ get '/products/:id' do
   c.close
   erb :product
 end
+
+#NEW!!!!
+get '/categories/:id' do
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+  @category = c.exec_params("SELECT * FROM categories WHERE categories.id = $1;", [params[:id]]).first
+  c.close
+  erb :category
+end
+#END NEW!!!!
 
 def create_products_table
   c = PGconn.new(:host => "localhost", :dbname => dbname)
