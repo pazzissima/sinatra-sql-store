@@ -128,6 +128,16 @@ post '/products/:id/destroy' do
   redirect '/products'
 end
 
+#NEW delete a category
+post '/categories/:id/destroy' do
+
+  c = PGconn.new(:host => "localhost", :dbname => dbname)
+  c.exec_params("DELETE FROM categories WHERE categories.id = $1", [params["id"]])
+  c.close
+  redirect '/categories'
+end
+#NEW!!!
+
 # GET the show page for a particular product
 get '/products/:id' do
   c = PGconn.new(:host => "localhost", :dbname => dbname)

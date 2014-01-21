@@ -1,0 +1,22 @@
+.main{
+	background-image: url('http://i40.tinypic.com/qq1iq0.jpg');
+	background-size: cover;
+	background-repeat: no-repeat;
+	font-family: 'Petrona', serif; 
+
+}
+
+
+
+ul
+{
+
+	margin: 10px;
+	font-size: 18px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: white;
+}
+
+a {
+color: white;
+}
